@@ -15,6 +15,7 @@ class CreateItemsTable extends Migration
             $table->decimal('starting_price', 10, 2);
             $table->decimal('current_price', 10, 2)->default(0);
             $table->unsignedBigInteger('auction_id')->nullable();
+            $table->string('image')->nullable(); // Menambahkan kolom untuk menyimpan path atau URL gambar
             $table->timestamps();
 
             // $table->foreign('auction_id')->references('id')->on('auctions')->onDelete('set null');
