@@ -16,6 +16,7 @@ class Item extends Model
         'current_price',
         'auction_id',
         'status',
+        'image',
     ];
 
     public function auction()

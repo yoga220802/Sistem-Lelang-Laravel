@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -25,9 +26,21 @@ class ItemController extends Controller
             'description' => 'required|string',
             'starting_price' => 'required|numeric|min:0',
             'auction_id' => 'required|exists:auctions,id',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Item::create($request->all());
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+        }
+
+        Item::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'starting_price' => $request->starting_price,
+            'current_price' => $request->starting_price,
+            'auction_id' => $request->auction_id,
+            'image' => $imagePath,
+        ]);
 
         return redirect()->route('items.index')->with('success', 'Item created successfully.');
     }
@@ -48,9 +61,20 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'starting_price' => 'required|numeric|min:0',
+            'auction_id' => 'required|exists:auctions,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $item->update($request->all());
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
+            $imagePath = $request->file('image')->store('images', 'public');
+            $item->image = $imagePath;
+        }
+
+        $item->update($request->except('image'));
 
         return redirect()->route('items.index')->with('success', 'Item updated successfully.');
     }
