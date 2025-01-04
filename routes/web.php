@@ -21,6 +21,7 @@ Route::post('logout', [UserController::class, 'logout'])->name('logout');
 
 // Auction Routes
 Route::middleware(['auth'])->group(function () {
+    // Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
     Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
     Route::post('/auctions/{auction}/bid', [BidController::class, 'placeBid'])->name('auctions.bid');
