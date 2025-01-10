@@ -9,7 +9,7 @@ use App\Http\Controllers\NotificationController;
 
 // Redirect root URL to main content
 Route::get('/', function () {
-    return redirect()->route('auctions.index');
+    return redirect()->route('dashboard');
 });
 
 // Authentication Routes
@@ -19,9 +19,11 @@ Route::get('register', [UserController::class, 'showRegistrationForm'])->name('r
 Route::post('register', [UserController::class, 'register']);
 Route::post('logout', [UserController::class, 'logout'])->name('logout');
 
+// Dashboard Route for all users
+Route::middleware(['auth'])->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
 // Auction Routes
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
     Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
     Route::post('/auctions/{auction}/bid', [BidController::class, 'placeBid'])->name('auctions.bid');
@@ -45,6 +47,3 @@ Route::middleware(['auth', 'can:manage-items'])->group(function () {
 Route::middleware(['auth', 'can:manage-auctions'])->group(function () {
     Route::resource('auctions', AuctionController::class)->except(['index', 'show']);
 });
-
-// Dashboard Route for Auction Managers
-Route::middleware(['auth', 'can:manage-auctions'])->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
