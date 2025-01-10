@@ -73,4 +73,16 @@ class AuctionController extends Controller
 
         return redirect()->route('auctions.index')->with('success', 'Auction deleted successfully.');
     }
+
+    public function active()
+    {
+        $activeAuctions = Auction::where('is_active', true)->get();
+        return view('auctions.active', compact('activeAuctions'));
+    }
+
+    public function completed()
+    {
+        $completedAuctions = Auction::where('is_active', false)->get();
+        return view('auctions.completed', compact('completedAuctions'));
+    }
 }

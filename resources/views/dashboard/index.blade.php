@@ -1,24 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Auction System</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    @extends('layouts.app')
+<!-- FILE: resources/views/dashboard/index.blade.php -->
 
-    @section('content')
-    <div class="container">
-        <h1>Dashboard</h1>
+@extends('layouts.admin')
+
+@section('content')
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+    @if(Auth::user() && Auth::user()->isAdmin())
         <div class="row">
-            <div class="col-md-6">
-                <h2>Active Auctions</h2>
-                <!-- Content removed as per request -->
+            <div class="col-lg-6">
+                <!-- Active Auctions Card Example -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Active Auctions</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Content removed as per request -->
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    @endsection
-</body>
-</html>
+    @else
+        <p>You do not have access to this page.</p>
+    @endif
+</div>
+@endsection
