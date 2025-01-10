@@ -38,7 +38,7 @@
     // Countdown timer
     // Countdown timer
 let countdownElement = document.getElementById('countdown');
-let countdownTime = {{ $item->auction_end_time->diffInSeconds(now()) }};
+// let countdownTime = {{ $item->auction_end_time->diffInSeconds(now()) }};
 let countdownInterval = setInterval(function() {
     if (countdownTime > 0) {
         countdownTime--;
