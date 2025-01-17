@@ -1,20 +1,39 @@
-<!-- FILE: resources/views/auctions/show.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
 <div class="container">
-    <h1>{{ $auction->item->name }}</h1>
+    <h1 class="text-center mb-4">{{ $auction->item->name }}</h1>
+
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4 shadow-sm">
+            <div class="card shadow-sm border-0">
+                <div class="carousel slide" id="itemCarousel" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ asset('storage/' . $auction->item->image) }}" class="d-block w-100 rounded" alt="{{ $auction->item->name }}">
+                        </div>
+                        <!-- Additional images can be added here if available -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#itemCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#itemCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <p><strong>Description:</strong> {{ $auction->item->description }}</p>
-                    <p><strong>Starting Price:</strong> ${{ number_format($auction->starting_price, 2) }}</p>
-                    <p><strong>Current Highest Bid:</strong> 
-                        ${{ number_format($highestBid->amount ?? $auction->starting_price, 2) }}
+                    <p><strong>Starting Price:</strong> Rp {{ number_format($auction->starting_price, 2) }}</p>
+                    <p><strong>Current Highest Bid:</strong> Rp {{ number_format($highestBid->amount ?? $auction->starting_price, 2) }}
                         @if($highestBid && $highestBid->user_id == auth()->id())
-                            <span class="badge badge-success">(You)</span>
+                            <span class="badge bg-success">(You)</span>
                         @endif
                     </p>
                     @if($auction->status === 'active')
@@ -24,24 +43,21 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <img src="{{ asset('storage/' . $auction->item->image) }}" alt="{{ $auction->item->name }}" class="img-fluid img-card-size">
+
+            @if(auth()->check() && $auction->status === 'active')
+                <form id="bid-form" action="{{ route('auctions.bid', $auction->id) }}" method="POST">
+                    @csrf
+                    <div class="form-group mb-3">
+                        <label for="amount">Your Bid:</label>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter your bid" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Place Bid</button>
+                </form>
+            @elseif(!auth()->check())
+                <p class="text-center">You must <a href="{{ route('login') }}">login</a> to place a bid.</p>
+            @endif
         </div>
     </div>
-
-    @if(auth()->check() && $auction->status === 'active')
-        <form id="bid-form" action="{{ route('auctions.bid', $auction->id) }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="amount">Your Bid:</label>
-                <input type="number" name="amount" id="amount" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Place Bid</button>
-        </form>
-    @elseif(!auth()->check())
-        <p>You must <a href="{{ route('login') }}">login</a> to place a bid.</p>
-    @endif
 </div>
 
 @if($auction->status === 'active')
@@ -57,7 +73,7 @@
             let hours = Math.floor((countdown % (60 * 60 * 24)) / (60 * 60));
             let minutes = Math.floor((countdown % (60 * 60)) / 60);
             let seconds = countdown % 60;
-            countdownElement.textContent = `${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik`;
+            countdownElement.textContent = `${days} days, ${hours} hrs, ${minutes} mins, ${seconds} secs`;
         } else {
             clearInterval(this);
             countdownElement.textContent = '{{ $auction->status === "ended" ? "Auction ended" : "Auction not started" }}';
@@ -67,10 +83,25 @@
 @endif
 
 <style>
-    .img-card-size {
-        max-width: 100%;
-        max-height: 300px;
+    .carousel-item img {
+        height: 400px;
         object-fit: cover;
+        border-radius: 8px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .card {
+        border-radius: 8px;
+    }
+    .card-body p {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
     }
 </style>
 @endsection

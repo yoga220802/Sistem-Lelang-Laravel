@@ -9,10 +9,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserManageController;
 use App\Http\Controllers\Admin\ItemController;
 // Redirect root URL to main content
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
-
+// Route::get('/', function () {
+//     return redirect()->route('dashboard');
+// });
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index'])->name('landing.page');
 // Authentication Routes
 Route::get('login', [UserController::class, 'showLoginForm'])->name('login');
 Route::post('login', [UserController::class, 'login']);

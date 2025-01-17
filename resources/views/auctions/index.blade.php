@@ -1,119 +1,139 @@
-@extends('layouts.app')
+@extends('layouts.participant')
 
 @section('content')
     <div class="container">
-        <h1 class="my-4">Daftar Auctions</h1>
+        <h1 class="my-4 text-center display-4 text-primary">Sistem Pelelangan Online</h1>
 
         <!-- Active Auctions -->
-        <div class="row justify-content-center">
-            @foreach ($auctionsActive as $auction)
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm border-success">
-                        <img src="{{ asset('storage/' . $auction->item->image) }}" class="card-img-top img-fixed-size"
-                            alt="{{ $auction->item->name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $auction->item->name }}</h5>
-                            <p class="card-text"><strong>Status:</strong> {{ $auction->status }}</p>
-                            <p class="card-text"><strong>Starting Price:</strong>
-                                Rp.{{ number_format($auction->starting_price, 2) }}</p>
-                            <p class="card-text"><strong>Current Price:</strong>
-                                Rp.{{ number_format($auction->current_price, 2) }}</p>
-                            @if ($auction->end_time)
-                                <p class="card-text"><strong>Auction Ends In:</strong> <span
-                                        id="countdown-{{ $auction->id }}">{{ $auction->end_time->diffInSeconds(now()) }}
-                                        seconds</span></p>
-                            @endif
-                            <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary mt-3">View
-                                Details</a>
-                            @if ($auction->status == 'active')
-                                @if (Auth::user()->role == 'participant')
-                                    <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mt-3"
-                                        id="bid-form-{{ $auction->id }}">
+        <div class="section my-5">
+            <h2 class="mb-4 text-success">Lelang Aktif</h2>
+            <div class="row justify-content-center">
+                @foreach ($auctionsActive as $auction)
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-lg border-0 rounded-lg">
+                            <img src="{{ asset('storage/' . $auction->item->image) }}"
+                                class="card-img-top img-fixed-size rounded-top" alt="{{ $auction->item->name }}">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">{{ $auction->item->name }}</h5>
+                                <p class="card-text"><strong>Status:</strong> <span
+                                        class="badge bg-success text-white">{{ $auction->status }}</span></p>
+                                <p class="card-text"><strong>Harga Awal:</strong>
+                                    Rp.{{ number_format($auction->starting_price, 2) }}</p>
+                                <p class="card-text"><strong>Harga Saat Ini:</strong>
+                                    Rp.{{ number_format($auction->current_price, 2) }}</p>
+                                @if ($auction->end_time)
+                                    <p class="card-text"><strong>Sisa Waktu:</strong> <span
+                                            id="countdown-{{ $auction->id }}">{{ $auction->end_time->diffInSeconds(now()) }}
+                                            detik</span></p>
+                                @endif
+                                @if ($auction->status === 'active')
+                                    <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mt-3">
                                         @csrf
                                         <div class="form-group">
-                                            <label for="amount">Your Bid:</label>
-                                            <input type="number" name="amount" id="amount" class="form-control"
-                                                required
-                                                min="{{ max($auction->starting_price, $auction->current_price + 1) }}">
+                                            <label for="bid_amount">Your Bid:</label>
+                                            <input type="number" name="bid_amount" id="bid_amount" class="form-control"
+                                                required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Place Bid</button>
                                     </form>
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger mt-3">
-                                            <ul>
-                                                @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
                                 @endif
-                            @endif
-                        </div>
-                        <div class="card-footer text-muted">
-                            <small>Last updated {{ $auction->updated_at->diffForHumans() }}</small>
+                                <a href="{{ route('auctions.show', $auction->id) }}"
+                                    class="btn btn-primary mt-3 w-100">Lihat Detail</a>
+                            </div>
+                            <div class="card-footer text-center bg-light">
+                                <small>Terakhir diperbarui {{ $auction->updated_at->diffForHumans() }}</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Upcoming Auctions -->
+        <div class="section my-5">
+            <h2 class="mb-4 text-primary">Lelang Mendatang</h2>
+            <div class="row">
+                @if ($auctionsNotStarted->isEmpty())
+                    <p class="text-center">Tidak ada item yang akan dilelang.</p>
+                @else
+                    @foreach ($auctionsNotStarted as $auction)
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-lg border-0 rounded-lg">
+                                <img src="{{ asset('storage/' . $auction->item->image) }}"
+                                    class="card-img-top img-fixed-size rounded-top" alt="{{ $auction->item->name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">{{ $auction->item->name }}</h5>
+                                    <p class="card-text"><strong>Harga Awal:</strong>
+                                        Rp.{{ number_format($auction->starting_price, 2) }}</p>
+                                    <p class="card-text"><strong>Harga Saat Ini:</strong>
+                                        Rp.{{ number_format($auction->current_price, 2) }}</p>
+                                    <p class="card-text"><strong>Mulai Dalam:</strong>
+                                        {{ $auction->start_time->diffForHumans() }}</p>
+                                    <a href="{{ route('auctions.show', $auction->id) }}"
+                                        class="btn btn-primary mt-3 w-100">Lihat Detail</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+
+        <!-- Ended Auctions -->
+        <div class="section my-5">
+            <h2 class="mb-4 text-danger">Lelang Berakhir</h2>
+            <div class="row">
+                @foreach ($auctionsEnded as $auction)
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-lg border-0 rounded-lg">
+                            <img src="{{ asset('storage/' . $auction->item->image) }}"
+                                class="card-img-top img-fixed-size rounded-top" alt="{{ $auction->item->name }}">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">{{ $auction->item->name }}</h5>
+                                <p class="card-text"><strong>Status:</strong> <span
+                                        class="badge bg-danger text-white">{{ $auction->status }}</span></p>
+                                <p class="card-text"><strong>Harga Awal:</strong>
+                                    Rp.{{ number_format($auction->starting_price, 2) }}</p>
+                                <p class="card-text"><strong>Harga Akhir:</strong>
+                                    Rp.{{ number_format($auction->current_price, 2) }}</p>
+                                @if ($auction->user_id)
+                                    <p class="card-text"><strong>Terjual kepada:</strong> {{ $auction->user->name }}</p>
+                                @else
+                                    <p class="card-text text-muted">Barang tidak terjual</p>
+                                @endif
+                                <a href="{{ route('auctions.show', $auction->id) }}"
+                                    class="btn btn-primary mt-3 w-100">Lihat Detail</a>
+                            </div>
+                            <div class="card-footer text-center bg-light">
+                                <small>Terakhir diperbarui {{ $auction->updated_at->diffForHumans() }}</small>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
-    <!-- Not Started Auctions -->
-    <h2 class="my-4">Upcoming Auctions</h2>
-    <div class="row">
-        @if ($auctionsNotStarted->isEmpty())
-            <p class="text-center">Tidak ada item yang akan dilelang.</p>
-        @else
-            @foreach ($auctionsNotStarted as $auction)
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm border-primary">
-                        <img src="{{ asset('storage/' . $auction->item->image) }}" class="card-img-top img-fixed-size"
-                            alt="{{ $auction->item->name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $auction->item->name }}</h5>
-                            <p class="card-text"><strong>Starting Price:</strong>
-                                Rp.{{ number_format($auction->starting_price, 2) }}</p>
-                            <p class="card-text"><strong>Current Price:</strong>
-                                Rp.{{ number_format($auction->current_price, 2) }}</p>
-                            <p class="card-text"><strong>Auction Starts In:</strong>
-                                {{ $auction->start_time->diffForHumans() }}</p>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        @endif
-    </div>
 
-    <!-- Ended Auctions -->
-    <h2 class="my-4">Ended Auctions</h2>
-    <div class="row">
-        @foreach ($auctionsEnded as $auction)
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm border-danger">
-                    <img src="{{ asset('storage/' . $auction->item->image) }}" class="card-img-top img-fixed-size"
-                        alt="{{ $auction->item->name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $auction->item->name }}</h5>
-                        <p class="card-text"><strong>Status:</strong> {{ $auction->status }}</p>
-                        <p class="card-text"><strong>Starting Price:</strong>
-                            Rp.{{ number_format($auction->starting_price, 2) }}</p>
-                        <p class="card-text"><strong>Current Price:</strong>
-                            Rp.{{ number_format($auction->current_price, 2) }}</p>
-                        @if ($auction->user_id)
-                            <p class="card-text"><strong>Terjual kepada:</strong> {{ $auction->user->name }}</p>
-                        @else
-                            <p class="card-text"><strong>Status:</strong> Barang tidak terjual</p>
-                        @endif
-                        <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary mt-3">View Details</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                        <small>Last updated {{ $auction->updated_at->diffForHumans() }}</small>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-    </div>
+    <style>
+        body {
+            background: linear-gradient(120deg, #f3f4f6, #e8f0fe);
+            color: #343a40;
+        }
+
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .img-fixed-size {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
 
     <script>
         @foreach ($auctionsActive as $auction)
@@ -130,23 +150,10 @@
                         countdownElement.innerText =
                             `${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik`;
                     } else {
-                        countdownElement.innerText = 'Auction ended';
+                        countdownElement.innerText = 'Lelang telah berakhir';
                     }
                 }, 1000);
             @endif
         @endforeach
-
-        window.Echo.channel('auctions')
-            .listen('AuctionUpdated', (e) => {
-                location.reload();
-            });
     </script>
-
-    <style>
-        .img-fixed-size {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-    </style>
 @endsection
