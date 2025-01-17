@@ -10,7 +10,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Edit User</h6>
         </div>
         <div class="card-body">
-            <form action="{{ route('users.update', $user->id) }}" method="POST">
+            <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="form-group">
@@ -20,6 +20,21 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->phone }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea class="form-control" id="address" name="address">{{ $user->address }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profile_image">Profile Image</label>
+                    <input type="file" class="form-control" id="profile_image" name="profile_image">
+                    @if($user->profile_image)
+                    <img src="{{ asset('storage/' . $user->profile_image) }}" alt="Profile Image" width="100">
+                    @endif
                 </div>
                 <div class="form-group">
                     <label for="password">Password (leave blank to keep current password)</label>

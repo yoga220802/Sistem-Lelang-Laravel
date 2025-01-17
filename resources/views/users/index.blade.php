@@ -27,6 +27,8 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
                             <th>Role</th>
                             <th>Actions</th>
                         </tr>
@@ -36,14 +38,18 @@
                         <tr class="{{ Auth::id() == $user->id ? 'table-primary' : '' }}">
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
+                            <td>{{ $user->phone }}</td>
+                            <td>{{ $user->address }}</td>
                             <td>{{ $user->role }}</td>
                             <td>
                                 <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                @if(Auth::id() != $user->id)
                                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

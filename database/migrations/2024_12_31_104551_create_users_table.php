@@ -14,6 +14,9 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'participant']);
+            $table->string('phone')->nullable();
+            $table->text('address')->nullable();
+            $table->string('profile_image')->nullable();
             $table->timestamps();
         });
     }

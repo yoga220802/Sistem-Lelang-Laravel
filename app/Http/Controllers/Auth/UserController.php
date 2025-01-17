@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UserController extends Controller
@@ -39,15 +40,25 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'
         ]);
+
+        $profileImage = null;
+        if ($request->hasFile('profile_image')) {
+            $profileImage = $request->file('profile_image')->store('profile_pictures', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
+            'role' => 'participant',
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'profile_image' => $profileImage,
         ]);
-
-        Auth::login($user);
 
         return redirect()->route('dashboard');
     }

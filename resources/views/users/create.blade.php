@@ -10,7 +10,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Add New Admin</h6>
         </div>
         <div class="card-body">
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <label for="name">Name</label>
@@ -19,6 +19,25 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea class="form-control" id="address" name="address"></textarea>
+                </div>
+                <div class="form-group">
+                <label for="profile_image">Profile Image</label>
+                    <div class="col-md-6">
+                        <input id="profile_image" type="file" class="form-control @error('profile_image') is-invalid @enderror" name="profile_image">
+                        @error('profile_image')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
