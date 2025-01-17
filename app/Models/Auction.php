@@ -20,6 +20,13 @@ class Auction extends Model
         'status',
     ];
 
+    use HasFactory;
+
+    protected $casts = [
+        'end_time' => 'datetime',
+        'start_time' => 'datetime',
+    ];
+
     public function item()
     {
         return $this->belongsTo(Item::class);

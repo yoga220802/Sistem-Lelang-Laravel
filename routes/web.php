@@ -28,6 +28,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
 });
 
+
+Route::post('/auctions/{id}/end', [AuctionController::class, 'end'])->name('auctions.end');
+Route::post('/auctions/{auction}/bid', [BidController::class, 'placeBid'])->name('auctions.bid');
 // Auction Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');

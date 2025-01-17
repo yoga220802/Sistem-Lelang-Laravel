@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\Auction;
+use App\Events\AuctionUpdated;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Exception;
@@ -29,7 +30,7 @@ class ItemController extends Controller
             'description' => 'nullable|string',
             'starting_price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'start_time' => 'required|date|after:now',
+            'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
 
@@ -71,50 +72,53 @@ class ItemController extends Controller
     }
 
     public function update(Request $request, Item $item)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'starting_price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'starting_price' => 'required|numeric|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'start_time' => 'required|date',
+        'end_time' => 'required|date|after:start_time',
+    ]);
+
+    $this->validateAuctionTime($request, $item->id);
+
+    try {
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('items_pictures', 'public');
+            $item->image = $imagePath;
+        }
+
+        $item->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'starting_price' => $request->starting_price,
         ]);
 
-        $this->validateAuctionTime($request, $item->id);
+        $item->auction->update([
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ]);
 
-        try {
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('items_pictures', 'public');
-                $item->image = $imagePath;
-            }
-
-            $item->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'starting_price' => $request->starting_price,
-            ]);
-
-            $item->auction->update([
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-            ]);
-
-            // Update auction status based on start_time and end_time
-            $now = Carbon::now('Asia/Jakarta');
-            $status = 'not started';
-            if ($request->start_time <= $now && $request->end_time >= $now) {
-                $status = 'active';
-            } elseif ($request->end_time < $now) {
-                $status = 'ended';
-            }
-            $item->auction->update(['status' => $status, 'is_active' => $status === 'active' ? 1 : 0]);
-
-            return redirect()->route('admin.items.index')->with('success', 'Item updated successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        // Update auction status based on start_time and end_time
+        $now = Carbon::now('Asia/Jakarta');
+        $status = 'not started';
+        if ($request->start_time <= $now && $request->end_time >= $now) {
+            $status = 'active';
+        } elseif ($request->end_time < $now) {
+            $status = 'ended';
         }
+        $item->auction->update(['status' => $status, 'is_active' => $status === 'active' ? 1 : 0]);
+
+        // Pancarkan event DataUpdated
+        event(new AuctionUpdated($item));
+
+        return redirect()->route('admin.items.index')->with('success', 'Item updated successfully.');
+    } catch (Exception $e) {
+        return redirect()->back()->withErrors(['error' => $e->getMessage()]);
     }
+}
     public function destroy(Item $item)
     {
         $item->delete();

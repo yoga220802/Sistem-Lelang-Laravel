@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Auction;
 use App\Models\Item;
+use Carbon\Carbon;
+use App\Models\Bid;
+use App\Events\AuctionUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +14,30 @@ class AuctionController extends Controller
 {
     public function index()
     {
-        $auctions = Auction::with('item')->where('end_time', '>', now())->get();
-        return view('auctions.index', compact('auctions'));
+        $auctionsActive = Auction::where('status', 'active')->get();
+        $auctionsNotStarted = Auction::where('status', 'not started')
+            ->orderBy('start_time', 'asc')
+            ->take(3)
+            ->get();
+        $auctionsEnded = Auction::where('status', 'ended')
+            ->orderBy('end_time', 'desc')
+            ->take(3)
+            ->get();
+
+        if (auth()->user()->isAdmin()) {
+            return view('admin.auctions.index', compact('auctionsActive', 'auctionsNotStarted', 'auctionsEnded'));
+        } else {
+            return view('auctions.index', compact('auctionsActive', 'auctionsNotStarted', 'auctionsEnded'));
+        }
     }
 
     public function show($id)
     {
         $auction = Auction::with('item')->findOrFail($id);
-        return view('auctions.show', compact('auction'));
+        $bids = Bid::where('item_id', $auction->item_id)->orderBy('created_at', 'desc')->get();
+        $highestBid = $bids->first();
+    
+        return view('auctions.show', compact('auction', 'bids', 'highestBid'));
     }
 
     public function create()
@@ -84,5 +103,16 @@ class AuctionController extends Controller
     {
         $completedAuctions = Auction::where('is_active', false)->get();
         return view('auctions.completed', compact('completedAuctions'));
+    }
+
+    public function end($id)
+    {
+        $auction = Auction::findOrFail($id);
+        $auction->end_time = Carbon::now();
+        $auction->status = 'ended';
+        $auction->is_active = false;
+        $auction->save();
+
+        return redirect()->route('auctions.index')->with('success', 'Auction ended successfully.');
     }
 }
