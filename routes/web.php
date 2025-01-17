@@ -4,9 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\BidController;
-use App\Http\Controllers\ItemController;
+// use App\Http\Controllers\ItemController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserManageController;
+use App\Http\Controllers\Admin\ItemController;
 // Redirect root URL to main content
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -21,6 +22,11 @@ Route::post('logout', [UserController::class, 'logout'])->name('logout');
 
 // Dashboard Route for all users
 Route::middleware(['auth'])->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
+// 
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
+});
 
 // Auction Routes
 Route::middleware(['auth'])->group(function () {
