@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.participant')
 
 @section('content')
 <div class="container">
@@ -73,10 +73,10 @@
             let hours = Math.floor((countdown % (60 * 60 * 24)) / (60 * 60));
             let minutes = Math.floor((countdown % (60 * 60)) / 60);
             let seconds = countdown % 60;
-            countdownElement.textContent = `${days} days, ${hours} hrs, ${minutes} mins, ${seconds} secs`;
+            countdownElement.innerText = `${days} days, ${hours} hrs, ${minutes} mins, ${seconds} secs`;
         } else {
             clearInterval(this);
-            countdownElement.textContent = '{{ $auction->status === "ended" ? "Auction ended" : "Auction not started" }}';
+            countdownElement.innerText = '{{ $auction->status === "ended" ? "Auction ended" : "Auction not started" }}';
         }
     }, 1000);
 </script>

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\BidController;
-use App\Http\Controllers\ItemController;
+use App\Http\Controllers\admin\ItemController;
 use App\Http\Controllers\NotificationController;
 
 // Authentication Routes

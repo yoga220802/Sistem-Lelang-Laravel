@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Auction;
 
 class UserController extends Controller
 {
@@ -77,11 +78,30 @@ class UserController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
+        $activeAuctions = Auction::where('status', 'active')->get();
+
+        $topBidders = User::select('users.name', \DB::raw('COUNT(auctions.user_id) as win_count'))
+            ->join('auctions', 'users.id', '=', 'auctions.user_id')
+            ->whereNotNull('auctions.user_id')
+            ->groupBy('users.name')
+            ->orderByRaw('COUNT(auctions.user_id) DESC')
+            ->take(5)
+            ->get();
+
+            $highestBidItem = Auction::whereNotNull('user_id')
+            ->get()
+            ->sortByDesc(function ($auction) {
+                return $auction->current_price - $auction->starting_price;
+            })
+            ->first();
+
+        $highestBidWinner = $highestBidItem ? User::find($highestBidItem->user_id) : null;
+
 
         if ($user && $user->isParticipant()) {
             return redirect()->route('auctions.index');
         }
 
-        return view('dashboard.index');
+        return view('dashboard.index', compact('activeAuctions', 'topBidders', 'highestBidItem', 'highestBidWinner'));
     }
 }

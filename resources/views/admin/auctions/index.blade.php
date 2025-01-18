@@ -18,8 +18,10 @@
                                 Rp.{{ number_format($auction->starting_price, 2) }}</p>
                             <p class="card-text"><strong>Current Price:</strong>
                                 Rp.{{ number_format($auction->current_price, 2) }}</p>
-                                @if ($auction->end_time)
-                                <p class="card-text"><strong>Sisa Waktu:</strong> <span id="countdown-{{ $auction->id }}">{{ $auction->end_time->diffInSeconds(now()) }} detik</span></p>
+                            @if ($auction->end_time)
+                                <p class="card-text"><strong>Sisa Waktu:</strong> <span
+                                        id="countdown-{{ $auction->id }}">{{ $auction->end_time->diffInSeconds(now()) }}
+                                        detik</span></p>
                             @endif
                             <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary mt-3">View
                                 Details</a>
@@ -57,6 +59,11 @@
                                     Rp.{{ number_format($auction->current_price, 2) }}</p>
                                 <p class="card-text"><strong>Auction Starts In:</strong>
                                     {{ $auction->start_time->diffForHumans() }}</p>
+                                <a href="{{ route('auctions.show', $auction->id) }}" class="btn btn-primary mt-3">View
+                                    Details</a>
+                                <a href="{{ route('admin.items.edit', $auction->item->id) }}"
+                                    class="btn btn-warning mt-3 w-100">Edit Item</a>
+
                             </div>
                         </div>
                     </div>
@@ -107,7 +114,8 @@
                         let hours = Math.floor((countdownTime % (60 * 60 * 24)) / (60 * 60));
                         let minutes = Math.floor((countdownTime % (60 * 60)) / 60);
                         let seconds = countdownTime % 60;
-                        countdownElement.innerText = `${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik`;
+                        countdownElement.innerText =
+                            `${days} hari, ${hours} jam, ${minutes} menit, ${seconds} detik`;
                     } else {
                         countdownElement.innerText = 'Lelang telah berakhir';
                     }

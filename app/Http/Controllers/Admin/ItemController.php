@@ -58,7 +58,7 @@ class ItemController extends Controller
         // Update the item with the auction_id
         $item->update(['auction_id' => $auction->id]);
 
-        return redirect()->route('admin.items.index')->with('success', 'Item created successfully.');
+        return redirect()->route('auctions.index')->with('success', 'Item created successfully.');
     }
 
     public function show(Item $item)
@@ -114,7 +114,7 @@ class ItemController extends Controller
         // Pancarkan event DataUpdated
         event(new AuctionUpdated($item));
 
-        return redirect()->route('admin.items.index')->with('success', 'Item updated successfully.');
+        return redirect()->route('auctions.index')->with('success', 'Item updated successfully.');
     } catch (Exception $e) {
         return redirect()->back()->withErrors(['error' => $e->getMessage()]);
     }
@@ -122,7 +122,7 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         $item->delete();
-        return redirect()->route('admin.items.index')->with('success', 'Item deleted successfully.');
+        return redirect()->route('auctions.index')->with('success', 'Item deleted successfully.');
     }
 
     private function validateAuctionTime(Request $request, $itemId = null)

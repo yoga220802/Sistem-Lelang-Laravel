@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Dashboard</title>
+    <title>Participant Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('startbootstrap-sb-admin-2-gh-pages/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -28,7 +28,7 @@
             <!-- Main Content -->
             <div id="content">
                 <!-- Topbar -->
-                @include('layouts.topbar')
+                @include('layouts.participantTopbar')
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->

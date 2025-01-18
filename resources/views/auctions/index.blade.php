@@ -26,16 +26,19 @@
                                             id="countdown-{{ $auction->id }}">{{ $auction->end_time->diffInSeconds(now()) }}
                                             detik</span></p>
                                 @endif
-                                @if ($auction->status === 'active')
-                                    <form action="{{ route('auctions.bid', $auction->id) }}" method="POST" class="mt-3">
+                                @if (auth()->check() && $auction->status === 'active')
+                                    <form id="bid-form" action="{{ route('auctions.bid', $auction->id) }}" method="POST">
                                         @csrf
-                                        <div class="form-group">
-                                            <label for="bid_amount">Your Bid:</label>
-                                            <input type="number" name="bid_amount" id="bid_amount" class="form-control"
-                                                required>
+                                        <div class="form-group mb-3">
+                                            <label for="amount">Your Bid:</label>
+                                            <input type="number" name="amount" id="amount" class="form-control"
+                                                placeholder="Enter your bid" required>
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Place Bid</button>
+                                        <button type="submit" class="btn btn-primary w-100">Place Bid</button>
                                     </form>
+                                @elseif(!auth()->check())
+                                    <p class="text-center">You must <a href="{{ route('login') }}">login</a> to place a bid.
+                                    </p>
                                 @endif
                                 <a href="{{ route('auctions.show', $auction->id) }}"
                                     class="btn btn-primary mt-3 w-100">Lihat Detail</a>
