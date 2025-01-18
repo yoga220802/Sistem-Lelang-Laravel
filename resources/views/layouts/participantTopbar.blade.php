@@ -20,10 +20,10 @@
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Edit Profile
                 </a>
-                {{-- <a class="dropdown-item" href="{{ route('auctions.won') }}">
+                <a class="dropdown-item" href="{{ route('auctions.won') }}">
                     <i class="fas fa-trophy fa-sm fa-fw mr-2 text-gray-400"></i>
                     Lelang yang Dimenangkan
-                </a> --}}
+                </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

@@ -27,6 +27,9 @@ Route::middleware(['auth'])->get('/dashboard', [UserController::class, 'dashboar
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
 });
+Route::get('profile/{id}/edit', [UserManageController::class, 'edit'])->name('profile.edit');
+Route::put('profile/{id}', [UserManageController::class, 'update'])->name('profile.update');
+Route::get('/auctions/won', [AuctionController::class, 'won'])->name('auctions.won');
 
 
 Route::get('auctions/not-started', [AuctionController::class, 'notStarted'])->name('auctions.notStarted');
@@ -52,9 +55,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('auctions', AuctionController::class)->except(['index', 'show']);
     });
 
-    Route::get('profile/{id}/edit', [UserManageController::class, 'edit'])->name('profile.edit');
-    Route::put('profile/{id}', [UserManageController::class, 'update'])->name('profile.update');
-    Route::get('/auctions/won', [AuctionController::class, 'won'])->name('auctions.won');
 
     Route::middleware(['auth', 'can:manage-users'])->group(function () {
         Route::get('users', [UserManageController::class, 'index'])->name('users.index');
