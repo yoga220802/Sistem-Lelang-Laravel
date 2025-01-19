@@ -22,7 +22,8 @@
 
     <!-- Nav Item - User Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser" aria-expanded="true" aria-controls="collapseUser">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
+            aria-expanded="true" aria-controls="collapseUser">
             <i class="fas fa-fw fa-user"></i>
             <span>User</span>
         </a>
@@ -37,7 +38,8 @@
 
     <!-- Nav Item - Item Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseItem" aria-expanded="true" aria-controls="collapseItem">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseItem"
+            aria-expanded="true" aria-controls="collapseItem">
             <i class="fas fa-fw fa-box"></i>
             <span>Item</span>
         </a>
@@ -45,14 +47,14 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Item Management:</h6>
                 <a class="collapse-item" href="{{ route('items.index') }}">Display Items</a>
-                <a class="collapse-item" href="{{ route('items.create') }}">Add Item</a>
             </div>
         </div>
     </li>
 
     <!-- Nav Item - Auctions Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAuctions" aria-expanded="true" aria-controls="collapseAuctions">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAuctions"
+            aria-expanded="true" aria-controls="collapseAuctions">
             <i class="fas fa-fw fa-gavel"></i>
             <span>Auctions</span>
         </a>
@@ -60,8 +62,8 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Auction Management:</h6>
                 <a class="collapse-item" href="{{ route('auctions.index') }}">Display Auctions</a>
-                <a class="collapse-item" href="{{ route('auctions.create') }}">Add Auction</a>
-                <a class="collapse-item" href="{{ route('auctions.active') }}">Active Auctions</a>
+                <a class="collapse-item" href="{{ route('items.create') }}">Add Auction</a>
+                <a class="collapse-item" href="{{ route('auctions.notStarted') }}">Not Started Auctions</a>
                 <a class="collapse-item" href="{{ route('auctions.completed') }}">Completed Auctions</a>
             </div>
         </div>

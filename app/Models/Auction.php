@@ -11,16 +11,30 @@ class Auction extends Model
 
     protected $fillable = [
         'item_id',
+        'user_id',
         'start_time',
         'end_time',
         'starting_price',
         'current_price',
+        'is_active',
         'status',
+    ];
+
+    use HasFactory;
+
+    protected $casts = [
+        'end_time' => 'datetime',
+        'start_time' => 'datetime',
     ];
 
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function bids()

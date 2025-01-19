@@ -4,14 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\BidController;
-use App\Http\Controllers\ItemController;
+// use App\Http\Controllers\ItemController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserManageController;
+use App\Http\Controllers\Admin\ItemController;
 // Redirect root URL to main content
-Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
-
+// Route::get('/', function () {
+//     return redirect()->route('dashboard');
+// });
+Route::get('/', [App\Http\Controllers\LandingPageController::class, 'index'])->name('landing.page');
 // Authentication Routes
 Route::get('login', [UserController::class, 'showLoginForm'])->name('login');
 Route::post('login', [UserController::class, 'login']);
@@ -22,27 +23,45 @@ Route::post('logout', [UserController::class, 'logout'])->name('logout');
 // Dashboard Route for all users
 Route::middleware(['auth'])->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
 
+// 
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('items', App\Http\Controllers\Admin\ItemController::class);
+});
+Route::get('profile/{id}/edit', [UserManageController::class, 'edit'])->name('profile.edit');
+Route::put('profile/{id}', [UserManageController::class, 'update'])->name('profile.update');
+Route::get('/auctions/won', [AuctionController::class, 'won'])->name('auctions.won');
+
+
+Route::get('auctions/not-started', [AuctionController::class, 'notStarted'])->name('auctions.notStarted');
+Route::post('/auctions/{id}/end', [AuctionController::class, 'end'])->name('auctions.end');
+Route::post('/auctions/{auction}/bid', [BidController::class, 'placeBid'])->name('auctions.bid');
+
+Route::get('auctions/completed', [AuctionController::class, 'completed'])->name('auctions.completed');
+Route::post('/auctions/{auction}/send-invoice', [AuctionController::class, 'sendInvoice'])->name('auctions.sendInvoice');
 // Auction Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
     Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
     Route::post('/auctions/{auction}/bid', [BidController::class, 'placeBid'])->name('auctions.bid');
 
+
     // Item Management Routes (for auction managers)
     Route::middleware(['can:manage-auctions'])->group(function () {
+        // Route::get('auctions/not-started', [AuctionController::class, 'notStarted'])->name('auctions.notStarted');
         Route::get('auctions/active', [AuctionController::class, 'active'])->name('auctions.active');
-        Route::get('auctions/completed', [AuctionController::class, 'completed'])->name('auctions.completed');
+        // Route::get('auctions/completed', [AuctionController::class, 'completed'])->name('auctions.completed');
         Route::resource('auctions', AuctionController::class)->except(['index', 'show']);
         Route::resource('items', ItemController::class);
         Route::resource('auctions', AuctionController::class)->except(['index', 'show']);
     });
 
+
     Route::middleware(['auth', 'can:manage-users'])->group(function () {
         Route::get('users', [UserManageController::class, 'index'])->name('users.index');
-        Route::get('users/create', [UserManageController::class, 'create'])->name('users.create');
-        Route::post('users', [UserManageController::class, 'store'])->name('users.store');
         Route::get('users/{id}/edit', [UserManageController::class, 'edit'])->name('users.edit');
         Route::put('users/{id}', [UserManageController::class, 'update'])->name('users.update');
+        Route::get('users/create', [UserManageController::class, 'create'])->name('users.create');
+        Route::post('users', [UserManageController::class, 'store'])->name('users.store');
         Route::delete('users/{id}', [UserManageController::class, 'destroy'])->name('users.destroy');
     });
 

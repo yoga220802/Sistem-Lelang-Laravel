@@ -58,7 +58,11 @@ class UserManageController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        if (auth()->user()->isAdmin()) {
+            return view('users.edit', compact('user'));
+        } else if (auth()->user()->isParticipant()){
+            return view('profile.edit', compact('user'));
+        }
     }
 
     public function update(Request $request, $id)
@@ -81,16 +85,23 @@ class UserManageController extends Controller
             }
             $user->profile_image = $request->file('profile_image')->store('profile_pictures', 'public');
         }
+
+        $role = auth()->user()->isParticipant() ? 'participant' : $request->role;
+
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password ? bcrypt($request->password) : $user->password,
-            'role' => $request->role,
+            'role' => $role,
             'phone' => $request->phone,
             'address' => $request->address,
             'profile_image' => $user->profile_image,
         ]);
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } else if (auth()->user()->isParticipant()){
+            return redirect()->route('auctions.index')->with('success', 'User updated successfully.');
+        }
     }
     public function destroy($id)
     {

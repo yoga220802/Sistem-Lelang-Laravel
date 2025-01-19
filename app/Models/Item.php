@@ -13,7 +13,7 @@ class Item extends Model
         'name',
         'description',
         'starting_price',
-        'current_price',
+        'final_price',
         'auction_id',
         'status',
         'image',
