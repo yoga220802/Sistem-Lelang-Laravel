@@ -30,6 +30,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 Route::get('profile/{id}/edit', [UserManageController::class, 'edit'])->name('profile.edit');
 Route::put('profile/{id}', [UserManageController::class, 'update'])->name('profile.update');
 Route::get('/auctions/won', [AuctionController::class, 'won'])->name('auctions.won');
+Route::get('/auctions/{auction}/invoice', [AuctionController::class, 'generateInvoice'])->name('auctions.invoice');
 
 
 Route::get('auctions/not-started', [AuctionController::class, 'notStarted'])->name('auctions.notStarted');

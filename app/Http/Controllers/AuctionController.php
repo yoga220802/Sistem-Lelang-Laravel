@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Item;
 use Carbon\Carbon;
 use App\Models\Bid;
@@ -152,5 +153,11 @@ class AuctionController extends Controller
     {
         $wonAuctions = Auction::where('user_id', auth()->id())->where('status', 'ended')->get();
         return view('auctions.won', compact('wonAuctions'));
+    }
+
+    public function generateInvoice(Auction $auction)
+    {
+        $pdf = Pdf::loadView('invoices.invoice', compact('auction'));
+        return $pdf->download('invoice_' . $auction->id . '.pdf');
     }
 }

@@ -14,6 +14,7 @@
                         <h5 class="card-title">{{ $auction->item->name }}</h5>
                         <p class="card-text"><strong>Final Price:</strong> Rp.{{ number_format($auction->current_price, 2) }}</p>
                         <p class="card-text"><strong>Won At:</strong> {{ $auction->end_time->format('d M Y, H:i') }}</p>
+                        <a href="{{ route('auctions.invoice', $auction->id) }}" class="btn btn-primary mt-3 w-100">Download Invoice</a>
                     </div>
                 </div>
             </div>
